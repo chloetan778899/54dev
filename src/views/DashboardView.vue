@@ -825,6 +825,27 @@ const getTabIcon = (key: string) => {
   }
   return icons[key] || 'circle'
 }
+
+const showLedgerTooltip = ref(false)
+const showOutstandingTooltip = ref(false)
+const showCurrentBalanceTooltip = ref(false)
+const showCycleProfitTooltip = ref(false)
+
+const vClickOutside = {
+  mounted(el: HTMLElement, binding: any) {
+    (el as any)._clickOutside = (event: Event) => {
+      if (!(el === event.target || el.contains(event.target as Node))) {
+        binding.value(event)
+      }
+    }
+    document.addEventListener('click', (el as any)._clickOutside)
+    document.addEventListener('touchstart', (el as any)._clickOutside)
+  },
+  unmounted(el: HTMLElement) {
+    document.removeEventListener('click', (el as any)._clickOutside)
+    document.removeEventListener('touchstart', (el as any)._clickOutside)
+  },
+}
 </script>
 
 <template>
@@ -1331,10 +1352,13 @@ const getTabIcon = (key: string) => {
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 mb-8 px-1">
               
               <div class="flex flex-col justify-between h-full">
-                <div class="flex items-center gap-1.5 mb-2 group relative w-fit">
+                <div class="flex items-center gap-1.5 mb-2 group relative w-fit cursor-help"
+                     @click="showLedgerTooltip = !showLedgerTooltip"
+                     v-click-outside="() => showLedgerTooltip = false">
                   <span class="text-[11px] uppercase tracking-wider text-[#666] dark:text-[#a1a1a1] font-semibold font-sans leading-none">{{ t('dashboard.assignments.ledger_balance', 'Total Ledger Balance') }}</span>
-                  <span class="material-icons-round text-[13px] text-[#aaa] cursor-help">help_outline</span>
-                  <div class="absolute bottom-full left-0 mb-2 w-48 p-2 bg-[#111] dark:bg-white text-white dark:text-black text-[11px] font-medium rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 shadow-lg pointer-events-none normal-case tracking-normal">
+                  <span class="material-icons-round text-[13px] text-[#aaa] group-hover:text-black dark:group-hover:text-white transition-colors">help_outline</span>
+                  <div class="absolute bottom-full left-0 mb-2 w-48 p-2 bg-[#111] dark:bg-white text-white dark:text-black text-[11px] font-medium rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 shadow-lg pointer-events-none normal-case tracking-normal"
+                       :class="{'opacity-100 visible pointer-events-auto': showLedgerTooltip}">
                     {{ t('dashboard.assignments.ledger_desc', 'Core operational funds, inclusive of profits.') }}
                   </div>
                 </div>
@@ -1342,10 +1366,13 @@ const getTabIcon = (key: string) => {
               </div>
 
               <div v-if="outstandingBalance > 0" class="flex flex-col justify-between h-full">
-                <div class="flex items-center gap-1.5 mb-2 group relative w-fit">
+                <div class="flex items-center gap-1.5 mb-2 group relative w-fit cursor-help"
+                     @click="showOutstandingTooltip = !showOutstandingTooltip"
+                     v-click-outside="() => showOutstandingTooltip = false">
                   <span class="text-[11px] uppercase tracking-wider text-[#666] dark:text-[#a1a1a1] font-semibold font-sans leading-none">{{ t('dashboard.assignments.outstanding', 'Outstanding Balance') }}</span>
-                  <span class="material-icons-round text-[13px] text-[#aaa] cursor-help">help_outline</span>
-                  <div class="absolute bottom-full left-0 mb-2 w-48 p-2 bg-[#111] dark:bg-white text-white dark:text-black text-[11px] font-medium rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 shadow-lg pointer-events-none normal-case tracking-normal">
+                  <span class="material-icons-round text-[13px] text-[#aaa] group-hover:text-black dark:group-hover:text-white transition-colors">help_outline</span>
+                  <div class="absolute bottom-full left-0 mb-2 w-48 p-2 bg-[#111] dark:bg-white text-white dark:text-black text-[11px] font-medium rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 shadow-lg pointer-events-none normal-case tracking-normal"
+                       :class="{'opacity-100 visible pointer-events-auto': showOutstandingTooltip}">
                     {{ t('dashboard.assignments.outstanding_desc', 'The funding shortfall required to settle the pending assignment.') }}
                   </div>
                 </div>
@@ -1355,10 +1382,13 @@ const getTabIcon = (key: string) => {
               </div>
 
               <div class="flex flex-col justify-between h-full">
-                <div class="flex items-center gap-1.5 mb-2 group relative w-fit">
+                <div class="flex items-center gap-1.5 mb-2 group relative w-fit cursor-help"
+                     @click="showCurrentBalanceTooltip = !showCurrentBalanceTooltip"
+                     v-click-outside="() => showCurrentBalanceTooltip = false">
                   <span class="text-[11px] uppercase tracking-wider text-[#666] dark:text-[#a1a1a1] font-semibold font-sans leading-none">{{ t('dashboard.assignments.current_balance', 'Current Balance') }}</span>
-                  <span class="material-icons-round text-[13px] text-[#aaa] cursor-help">help_outline</span>
-                  <div class="absolute bottom-full left-0 mb-2 w-48 p-2 bg-[#111] dark:bg-white text-white dark:text-black text-[11px] font-medium rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 shadow-lg pointer-events-none normal-case tracking-normal">
+                  <span class="material-icons-round text-[13px] text-[#aaa] group-hover:text-black dark:group-hover:text-white transition-colors">help_outline</span>
+                  <div class="absolute bottom-full left-0 mb-2 w-48 p-2 bg-[#111] dark:bg-white text-white dark:text-black text-[11px] font-medium rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 shadow-lg pointer-events-none normal-case tracking-normal"
+                       :class="{'opacity-100 visible pointer-events-auto': showCurrentBalanceTooltip}">
                     {{ t('dashboard.assignments.current_balance_desc', 'Total ledger balance projected with the pending active assignment.') }}
                   </div>
                 </div>
@@ -1366,10 +1396,13 @@ const getTabIcon = (key: string) => {
               </div>
               
               <div class="flex flex-col justify-between h-full">
-                <div class="flex items-center gap-1.5 mb-2 group relative w-fit">
+                <div class="flex items-center gap-1.5 mb-2 group relative w-fit cursor-help"
+                     @click="showCycleProfitTooltip = !showCycleProfitTooltip"
+                     v-click-outside="() => showCycleProfitTooltip = false">
                   <span class="text-[11px] uppercase tracking-wider text-[#666] dark:text-[#a1a1a1] font-semibold font-sans leading-none">{{ t('dashboard.assignments.cycle_profit', 'Current Cycle Profit') }}</span>
-                  <span class="material-icons-round text-[13px] text-[#aaa] cursor-help">help_outline</span>
-                  <div class="absolute bottom-full left-0 mb-2 w-48 p-2 bg-[#111] dark:bg-white text-white dark:text-black text-[11px] font-medium rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 shadow-lg pointer-events-none normal-case tracking-normal">
+                  <span class="material-icons-round text-[13px] text-[#aaa] group-hover:text-black dark:group-hover:text-white transition-colors">help_outline</span>
+                  <div class="absolute bottom-full left-0 mb-2 w-48 p-2 bg-[#111] dark:bg-white text-white dark:text-black text-[11px] font-medium rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 shadow-lg pointer-events-none normal-case tracking-normal"
+                       :class="{'opacity-100 visible pointer-events-auto': showCycleProfitTooltip}">
                     {{ t('dashboard.assignments.cycle_profit_desc', 'This calculation updates at the start of each new cycle. All profits are then added to the total ledger balance.') }}
                   </div>
                 </div>
